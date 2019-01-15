@@ -1,0 +1,2 @@
+# COCOMA-FairDivision
+Projet COCOMA
