@@ -13,7 +13,7 @@ class Problem(object):
         self.items = items
 
         for name in agents:
-            self.agents[name] = Agent(name)
+            self.agents[name] = Agent(name, self)
 
     def __str__(self):
         s = "|-=-=-=-=-=-=-=-=-= [ " + self.name + " ]-=-=-=-=-=-=-=-=-=|\n"
@@ -27,6 +27,7 @@ class Problem(object):
         for counter, item in enumerate(self.items):
             s += "|" + str(counter+1) + " : " + str(item) + "\n"
         s += "|\n"
+        s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n\n"
         return s
 
     "======================================"
@@ -36,7 +37,7 @@ class Problem(object):
     """
     Donne l'item spécifié à l'agent spécifié
     """
-    def give_item_to(self, item, agent):
+    def allocate(self, item, agent):
         return
 
     "====================================="
