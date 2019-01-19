@@ -28,7 +28,7 @@ class Problem(object):
         for counter, item in enumerate(self.items):
             s += "|" + str(counter+1) + " : " + str(item) + "\n"
         s += "|\n"
-        s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n\n"
+        s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
         return s
 
     "======================================"
@@ -38,8 +38,85 @@ class Problem(object):
     """
     Donne l'item spécifié à l'agent spécifié
     """
-    def allocate(self, item, agent):
+    def allocate(self, item, agent_name):
+        agent = self.agents[agent_name]
+        agent.give_item(item)
+        print("... Giving item", item, "to", agent_name)
         return
+
+    """
+    Enlève l'item spécifié à l'agent spécifié
+    """
+    def unallocate(self, item, agent_name):
+        agent = self.agents[agent_name]
+        agent.drop_item(item)
+        print("... Removing item", item, "from", agent_name)
+        return
+
+    """
+    Transfère l'item spécifié de l'agent donneur vers l'agent receveur
+    """
+    def transfer(self, agent_name_giver, item, agent_name_receiver):
+        agent_giver = self.agents[agent_name_giver]
+        agent_receiver = self.agents[agent_name_receiver]
+        agent_giver.drop_item(item)
+        agent_receiver.give_item(item)
+        print("... Transfering item", item, "from", agent_name_giver, "to", agent_name_receiver)
+        return
+
+    """
+    Retourne l'agent, appartenant aux agents eligibles, qui value le plus cet item
+    """
+    def max_utility_from(self, item, agents_name_set):
+        agents_evaluation = dict()
+        for name, agent in self.agents.items():
+            if name in agents_name_set:
+                agents_evaluation[name] = agent.evaluate(item)
+        sorted_agents = list(sorted(agents_evaluation.items(), key=lambda x: x[1], reverse=True))
+        return sorted_agents[0][0]
+
+    """
+    Retourne l'agent, appartenant aux agents eligibles, qui value le moins cet item
+    """
+    def least_utility_from(self, item, agents_name_set):
+        agents_evaluation = dict()
+        for name, agent in self.agents.items():
+            if name in agents_name_set:
+                agents_evaluation[name] = agent.evaluate(item)
+        sorted_agents = list(sorted(agents_evaluation.items(), key=lambda x: x[1], reverse=False))
+        return sorted_agents[0][0]
+
+    """
+    Retourne la taille de l'allocation la plus grande
+    """
+    def get_max_alloc_size(self):
+        max_size = 0
+        for name, agent in self.agents.items():
+            if len(agent.items) > max_size:
+                max_size = len(agent.items)
+        return max_size
+
+    """
+    Retourne les agents qui peuvent recevoir des items
+    """
+    def get_eligible_agents(self):
+        eligible_agents = set()
+        max_size = self.get_max_alloc_size()
+        for name, agent in self.agents.items():
+            if len(agent.items) < max_size:
+                eligible_agents.add(name)
+
+        # They all have the same number of items
+        if len(eligible_agents) == 0:
+            eligible_agents = self.agents.keys()
+
+        return eligible_agents
+
+    """
+    Retourne les agents qui ne peuvent pas recevoir des items
+    """
+    def get_uneligible_agents(self):
+        return self.agents.keys() - self.get_eligible_agents()
 
     "====================================="
     "=============== Items ==============="
@@ -51,7 +128,7 @@ class Problem(object):
     def get_allocated_items(self):
         allocated_items = set()
 
-        for agent in self.agents:
+        for agent in self.agents.values():
             for item in agent.items:
                 allocated_items.add(item)
 

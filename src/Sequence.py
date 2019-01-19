@@ -13,7 +13,10 @@ class SequenceType(AutoNumber):
 class Sequence(object):
 
     @staticmethod
-    def generate_sequence(agents, resources, mode=SequenceType.ROUND_ROBIN):
+    def generate(problem, mode=SequenceType.ROUND_ROBIN):
+        agents = problem.agents
+        resources = problem.items
+
         repeat = math.floor(len(resources) / len(agents))
         p = list(agents)
         p_inv = p.copy()

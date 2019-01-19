@@ -16,10 +16,10 @@ class Database(object):
         self.load_items_names()
 
     def get_random_agents_names(self, number):
-        return random.sample(self.agents_names, number)
+        return set(random.sample(self.agents_names, number))
 
     def get_random_items_names(self, number):
-        return random.sample(self.items_names, number)
+        return set(random.sample(self.items_names, number))
 
     def load_agents_names(self):
         with open(Database.AGENTS_NAMES_FILE) as f:

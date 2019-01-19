@@ -60,7 +60,7 @@ class Agent(object):
         lot = OrderedDict()
         for item in items:
             lot[item] = self.evaluate(item)
-        sorted_lot = list(sorted(lot.items(), key=lambda x: x[1], reverse=False))
+        sorted_lot = list(sorted(lot.items(), key=lambda x: x[1], reverse=True))
         return sorted_lot[value][0]
 
     """
@@ -70,7 +70,7 @@ class Agent(object):
         lot = dict()
         for item in items:
             lot[item] = self.evaluate(item)
-        sorted_lot = list(sorted(lot.items(), key=lambda x: x[1], reverse=True))
+        sorted_lot = list(sorted(lot.items(), key=lambda x: x[1], reverse=False))
         return sorted_lot[value][0]
 
     "====================================="
