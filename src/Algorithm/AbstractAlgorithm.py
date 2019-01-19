@@ -18,6 +18,8 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
         return s
 
     def compute(self, sequence):
+        self.sequence = sequence
+
         print(self)
         self.print_start_computing()
 
@@ -27,7 +29,7 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
         print(self)
 
     @abstractmethod
-    def _compute(self, sequence):
+    def _compute(self):
         raise NotImplementedError
 
     @staticmethod

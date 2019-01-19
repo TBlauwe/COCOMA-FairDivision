@@ -16,7 +16,7 @@ class Agent(object):
         self.generate_borda_rankings(problem.items)
 
     def __str__(self):
-        s = "Agent " + self.name + " | Items " + str(self.items) + " | Rankings "
+        s = "Agent " + self.name + " | Items " + str(self.items) + " | Rankings : "
         for index, item in enumerate(self.rankings):
             s += item
             if not len(self.rankings) - index == 1:
