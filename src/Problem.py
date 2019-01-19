@@ -16,8 +16,9 @@ class Problem(object):
             self.agents[name] = Agent(name, self)
 
     def __str__(self):
-        s = "|-=-=-=-=-=-=-=-=-= [ " + self.name + " ]-=-=-=-=-=-=-=-=-=|\n"
+        s = "|-=-=-=-=-=-=-=-=-= [ Problem ]-=-=-=-=-=-=-=-=-=|\n"
         s += "|\n"
+        s += "| Name : " + self.name + "\n"
         s += "| [" + str(len(self.agents.values())) + "] Agents :\n"
         for counter, agent in enumerate(self.agents.values()):
             s += "|" + str(counter+1) + " : " + str(agent) + "\n"

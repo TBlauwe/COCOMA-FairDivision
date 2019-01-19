@@ -3,14 +3,8 @@
 from src.Database import *
 from src.Problem import *
 from src.Sequence import *
-from src.Utility import *
+from src.Algorithm.TestAlgorithm import TestAlgorithm
 
-
-# ==========================================
-# =============== PARAMETERS ===============
-# ==========================================
-NUMBER_OF_AGENTS = 3
-NUMBER_OF_ITEMS = NUMBER_OF_AGENTS * 2
 
 # ==============================================
 # =============== INITIALIZATION ===============
@@ -20,16 +14,33 @@ NUMBER_OF_ITEMS = NUMBER_OF_AGENTS * 2
 db = Database()
 
 # Define a problem
-pb = Problem("Test",
-             db.get_random_agents_names(NUMBER_OF_AGENTS),
-             db.get_random_items_names(NUMBER_OF_ITEMS))
+nbAgents = 3
+nbItems = nbAgents * 2
+test_pb = Problem("Test",
+             db.get_random_agents_names(nbAgents),
+             db.get_random_items_names(nbItems))
 
-# Visualize data
-print(pb)
+# Resolve a pb with an algorithm
+test_algo = TestAlgorithm(test_pb)
+
+# ==============================================
+# =============== COMPUTATION ===============
+# ==============================================
+
+test_algo.compute()
+
+# =======================================
+# =============== TESTING ===============
+# =======================================
+
+print("|-=-=-=-=-=-=-=-=-= Testing -=-=-=-=-=-=-=-=-=-=|")
+
+print(" --- SEQUENCES ---");
 
 # Sequence data
-seq = Sequence.generate_sequence(pb.agents, pb.items, SequenceType.ROUND_ROBIN)
-print(seq)
+seq = Sequence.generate_sequence(test_pb.agents, test_pb.items, SequenceType.ROUND_ROBIN)
+print("RoundRobin", seq)
 
-seq = Sequence.generate_sequence(pb.agents, pb.items, SequenceType.BALANCED)
-print(seq)
+seq = Sequence.generate_sequence(test_pb.agents, test_pb.items, SequenceType.BALANCED)
+print("Balanced", seq)
+
