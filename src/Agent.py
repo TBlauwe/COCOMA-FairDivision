@@ -5,7 +5,6 @@ import random
 from collections import OrderedDict
 
 
-
 class Agent(object):
 
     def __init__(self, name, problem):
@@ -16,7 +15,7 @@ class Agent(object):
         self.generate_borda_rankings(problem.items)
 
     def __str__(self):
-        s = "Agent " + self.name + " | Items " + str(self.items) + " | Rankings : "
+        s = "Agent " + self.name + "\t| Items " + str(self.items) + "\t| Rankings : "
         for index, item in enumerate(self.rankings):
             s += item
             if not len(self.rankings) - index == 1:
@@ -38,20 +37,45 @@ class Agent(object):
             self.rankings[item] = len(items) - index
 
     """
+    Retourne le rank d'un item.
+    1 préféré
+    N le moins préféré
+    """
+    def rank(self, item):
+        for index, _item in enumerate(self.rankings.keys()):
+            if _item == item:
+                return index
+
+    """
+    Retourne tous les items qui ont un rang meilleur ou égal à celui donné
+    """
+    def get_items_under_rank(self, items, rank):
+        _items = set()
+        for item in items:
+            if self.rank(item) <= rank:
+                _items.add(item)
+        return _items
+
+    """
     Retourne l'utilité actuelle de l'agent
     """
     def utility(self):
-        utility = 0
-        for item in self.items:
-            utility += self.evaluate(item)
-
-        return utility
+        return self.evaluate_bundle(self.items)
 
     """
     Retourne l'utilité d'un agent envers un bien
     """
     def evaluate(self, item):
         return self.rankings[item]
+
+    """
+    Retourne l'utilité d'un agent envers un lot 
+    """
+    def evaluate_bundle(self, bundle):
+        evaluation = 0
+        for item in bundle:
+            evaluation += self.evaluate(item)
+        return evaluation
 
     """
     Retourne le "value" meilleur item d'un lot
@@ -73,6 +97,15 @@ class Agent(object):
         sorted_lot = list(sorted(lot.items(), key=lambda x: x[1], reverse=False))
         return sorted_lot[value][0]
 
+    """
+    Compare l'allocation actuelle avec l'allocation passé en paramètre
+    - 1 :   Moins bonne
+    0 :     Indécis
+    1 :     Meilleure
+    """
+    def compare_bundle(self, bundle):
+        return self.utility() - self.evaluate_bundle(bundle)
+
     "====================================="
     "=============== Items ==============="
     "====================================="
@@ -90,4 +123,3 @@ class Agent(object):
     def drop_item(self, item):
         self.items.remove(item)
         return
-

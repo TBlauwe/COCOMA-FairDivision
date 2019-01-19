@@ -19,17 +19,23 @@ class Problem(object):
         s = "|-=-=-=-=-=-=-=-=-= [ Problem ]-=-=-=-=-=-=-=-=-=|\n"
         s += "|\n"
         s += "| Name : " + self.name + "\n"
+        s += "|\n"
         s += "| [" + str(len(self.agents.values())) + "] Agents :\n"
         for counter, agent in enumerate(self.agents.values()):
-            s += "|" + str(counter+1) + " : " + str(agent) + "\n"
+            s += "|\t" + str(counter+1) + " : " + str(agent) + "\n"
         s += "|\n"
         s += "| [" + str(len(self.items)) + "] Items :\n"
-        s += "|\n"
         for counter, item in enumerate(self.items):
-            s += "|" + str(counter+1) + " : " + str(item) + "\n"
+            s += "|\t" + str(counter+1) + " : " + str(item) + "\n"
         s += "|\n"
         s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
         return s
+
+    def number_of_items(self):
+        return len(self.items)
+
+    def number_of_agents(self):
+        return len(self.agents)
 
     "======================================"
     "=============== Agents ==============="
@@ -117,6 +123,12 @@ class Problem(object):
     """
     def get_uneligible_agents(self):
         return self.agents.keys() - self.get_eligible_agents()
+
+    """
+    Retourne les agents autre que ceux passés en argument
+    """
+    def get_other_agents(self, agents):
+        return self.agents.keys() - agents
 
     "====================================="
     "=============== Items ==============="

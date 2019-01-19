@@ -41,3 +41,4 @@ class BottomUpAlgorithm(AbstractAlgorithm):
             self.problem.allocate(least_valued_item, receiver)
 
             counter += 1
+        self.status = self.Status.SUCCEEDED

@@ -4,6 +4,7 @@ from src.Database import *
 from src.Problem import *
 from src.Sequence import *
 from src.Algorithm.BottomUpAlgorithm import BottomUpAlgorithm
+from src.Algorithm.TrumpAlgorithm import TrumpAlgorithm
 
 # Load database
 db = Database()
@@ -18,4 +19,8 @@ a3_r2_pb = Problem("a3_r2",
 # Resolve a pb with an algorithm
 bottom_up_algo = BottomUpAlgorithm(a3_r2_pb)
 bottom_up_algo.compute(Sequence.generate(bottom_up_algo.problem, SequenceType.ROUND_ROBIN))
+
+# Resolve a pb with an algorithm
+trump_algo = TrumpAlgorithm(a3_r2_pb)
+trump_algo.compute(Sequence.generate(bottom_up_algo.problem, SequenceType.ROUND_ROBIN))
 
