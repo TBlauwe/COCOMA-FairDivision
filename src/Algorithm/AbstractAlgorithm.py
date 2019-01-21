@@ -15,6 +15,7 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
         self.sequence = list()
         self.status = self.Status.INITIALIZED
         self.reason = ""
+        self.trace = list()
 
     def __str__(self):
         s = "|-=-=-=-=-=-=-=-=-= [ Status ]-=-=-=-=-=-=-=-=-=|\n"
@@ -28,19 +29,24 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
         s += str(self.problem)
         return s
 
-    def compute(self, sequence):
+    def compute(self, sequence, display_trace=True):
+        self.trace.clear()
         self.sequence = sequence
 
-        print(self)
-        self.print_start_computing()
+        self.trace.append(str(self))
+        self.trace.append(self.print_start_computing())
 
         self._compute(sequence)
 
-        self.print_end_computing()
-        print(self)
+        self.trace.append(self.print_end_computing())
+        self.trace.append(str(self))
+
+        if display_trace:
+            for trace in self.trace:
+                print(trace)
 
     @abstractmethod
-    def _compute(self, sequence):
+    def _compute(self, sequence, display_trace):
         raise NotImplementedError
 
     @staticmethod
@@ -48,16 +54,16 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
         s = "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
         s += "|-=-=-=-=-=-=-=-=-= [ START ]-=-=-=-=-=-=-=-=-=|\n"
         s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
-        print(s)
+        return s
 
     @staticmethod
     def print_progress():
         s = "| Sequence"
-        print(s)
+        return s
 
     @staticmethod
     def print_end_computing():
         s = "\n|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
         s += "|-=-=-=-=-=-=-=-=-= [ END ]-=-=-=-=-=-=-=-=-=|\n"
         s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
-        print(s)
+        return s

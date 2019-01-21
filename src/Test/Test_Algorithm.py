@@ -17,10 +17,12 @@ a3_r2_pb = Problem("a3_r2",
              db.get_random_items_names(nbItems))
 
 # Resolve a pb with an algorithm
-bottom_up_algo = BottomUpAlgorithm(a3_r2_pb)
-bottom_up_algo.compute(Sequence.generate(bottom_up_algo.problem, SequenceType.ROUND_ROBIN))
+#bottom_up_algo = BottomUpAlgorithm(a3_r2_pb)
+#bottom_up_algo.compute(Sequence.generate(bottom_up_algo.problem, SequenceType.ROUND_ROBIN))
 
 # Resolve a pb with an algorithm
 trump_algo = TrumpAlgorithm(a3_r2_pb)
-trump_algo.compute(Sequence.generate(bottom_up_algo.problem, SequenceType.ROUND_ROBIN))
+trump_algo.compute(Sequence.generate(a3_r2_pb, SequenceType.ROUND_ROBIN), False)
+# Print results
+print(trump_algo)
 

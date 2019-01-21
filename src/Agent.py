@@ -69,7 +69,7 @@ class Agent(object):
         return self.rankings[item]
 
     """
-    Retourne l'utilité d'un agent envers un lot 
+    Retourne l'utilité d'un agent envers un lot (ou le score de borda d'un bundle)
     """
     def evaluate_bundle(self, bundle):
         evaluation = 0

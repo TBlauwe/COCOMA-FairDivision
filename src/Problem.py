@@ -1,6 +1,8 @@
 # coding: utf8
 
 from src.Agent import *
+import itertools
+import math
 
 
 class Problem(object):
@@ -41,28 +43,27 @@ class Problem(object):
     "=============== Agents ==============="
     "======================================"
 
-    """
-    Donne l'item spécifié à l'agent spécifié
-    """
     def allocate(self, item, agent_name):
+        """
+        Donne l'item spécifié à l'agent spécifié
+        """
         agent = self.agents[agent_name]
         agent.give_item(item)
-        print("... Giving item", item, "to", agent_name)
         return
 
-    """
-    Enlève l'item spécifié à l'agent spécifié
-    """
     def unallocate(self, item, agent_name):
+        """
+        Enlève l'item spécifié à l'agent spécifié
+        """
         agent = self.agents[agent_name]
         agent.drop_item(item)
         print("... Removing item", item, "from", agent_name)
         return
 
-    """
-    Transfère l'item spécifié de l'agent donneur vers l'agent receveur
-    """
     def transfer(self, agent_name_giver, item, agent_name_receiver):
+        """
+        Transfère l'item spécifié de l'agent donneur vers l'agent receveur
+        """
         agent_giver = self.agents[agent_name_giver]
         agent_receiver = self.agents[agent_name_receiver]
         agent_giver.drop_item(item)
@@ -70,10 +71,10 @@ class Problem(object):
         print("... Transfering item", item, "from", agent_name_giver, "to", agent_name_receiver)
         return
 
-    """
-    Retourne l'agent, appartenant aux agents eligibles, qui value le plus cet item
-    """
     def max_utility_from(self, item, agents_name_set):
+        """
+        Retourne l'agent, appartenant aux agents eligibles, qui value le plus cet item
+        """
         agents_evaluation = dict()
         for name, agent in self.agents.items():
             if name in agents_name_set:
@@ -81,10 +82,10 @@ class Problem(object):
         sorted_agents = list(sorted(agents_evaluation.items(), key=lambda x: x[1], reverse=True))
         return sorted_agents[0][0]
 
-    """
-    Retourne l'agent, appartenant aux agents eligibles, qui value le moins cet item
-    """
     def least_utility_from(self, item, agents_name_set):
+        """
+        Retourne l'agent, appartenant aux agents eligibles, qui value le moins cet item
+        """
         agents_evaluation = dict()
         for name, agent in self.agents.items():
             if name in agents_name_set:
@@ -92,20 +93,20 @@ class Problem(object):
         sorted_agents = list(sorted(agents_evaluation.items(), key=lambda x: x[1], reverse=False))
         return sorted_agents[0][0]
 
-    """
-    Retourne la taille de l'allocation la plus grande
-    """
     def get_max_alloc_size(self):
+        """
+        Retourne la taille de l'allocation la plus grande
+        """
         max_size = 0
         for name, agent in self.agents.items():
             if len(agent.items) > max_size:
                 max_size = len(agent.items)
         return max_size
 
-    """
-    Retourne les agents qui peuvent recevoir des items
-    """
     def get_eligible_agents(self):
+        """
+        Retourne les agents qui peuvent recevoir des items
+        """
         eligible_agents = set()
         max_size = self.get_max_alloc_size()
         for name, agent in self.agents.items():
@@ -118,26 +119,26 @@ class Problem(object):
 
         return eligible_agents
 
-    """
-    Retourne les agents qui ne peuvent pas recevoir des items
-    """
     def get_uneligible_agents(self):
+        """
+        Retourne les agents qui ne peuvent pas recevoir des items
+        """
         return self.agents.keys() - self.get_eligible_agents()
 
-    """
-    Retourne les agents autre que ceux passés en argument
-    """
     def get_other_agents(self, agents):
+        """
+        Retourne les agents autre que ceux passés en argument
+        """
         return self.agents.keys() - agents
 
     "====================================="
     "=============== Items ==============="
     "====================================="
 
-    """
-    Retourne les items qui ont été alloués
-    """
     def get_allocated_items(self):
+        """
+        Retourne les items qui ont été alloués
+        """
         allocated_items = set()
 
         for agent in self.agents.values():
@@ -146,25 +147,85 @@ class Problem(object):
 
         return allocated_items
 
-    """
-    Retourne les items qui n'ont pas été alloués
-    """
     def get_unallocated_items(self):
+        """
+        Retourne les items qui n'ont pas été alloués
+        """
         return self.items - self.get_allocated_items()
+
+    def get_items_per_agent(self):
+        return math.floor(len(self.items) / len(self.agents))
 
     "=========================================="
     "=============== Efficiency ==============="
     "=========================================="
 
-    """
-    Retourne vrai si la propriété de complétude est vérifié
-    """
     def check_completeness(self):
+        """
+        Retourne vrai si la propriété de complétude est vérifié
+        """
         return len(self.get_unallocated_items()) == 0
 
-    """
-    Retourne vrai si la propriété de front de pareto optimal est vérifié
-    """
-    def check_pareto_optimality(self):
-        # TODO - Implement
-        return NotImplementedError
+    "================================================"
+    "=============== Borda properties ==============="
+    "================================================"
+
+    def is_borda_optimal(self):
+        """
+        Retourne vrai si chaque allocation de chaque agent est meilleure ou égale
+        que si chacun possédait les autres allocations des autres agents.
+        De plus, un agent doit évaluer que son allocation est strictment meilleure
+        que celle d'un autre au moins une fois
+        """
+        at_least_one_greater = False
+        for name, agent in self.agents.items():
+            other_agents = self.get_other_agents(set(name))
+            for other_name in other_agents:
+                other_agent = self.agents[other_name]
+                diff = agent.utility() - agent.evaluate_bundle(other_agent.items)
+                if diff < 0:
+                    return False
+                elif diff > 0:
+                    at_least_one_greater = True
+        return at_least_one_greater
+
+    def is_maximum_borda_sum(self):
+        """
+        itertools.combinaison()
+        Retourne vrai si la somme des scores de Borda des agents actuels
+        est égale au max de la sum des scores de Borda des agents selon toutes les allocations possibles
+        """
+        # I./ Compute current sum
+        sum = 0
+        for name, agent in self.agents.items():
+            sum += agent.utility()
+
+        # II./ Get all possible allocations
+        all_alloc = [list(x) for x in itertools.combinations(self.items, self.get_items_per_agent())]
+
+    def is_borda_proportional(self):
+        """
+        Retourne vrai si chaque agent a un score de Borda au moins égal à tous les autres agents
+        """
+        for name, agent in self.agents.items():
+            other_agents = self.get_other_agents(set(name))
+            for other_name in other_agents:
+                other_agent = self.agents[other_name]
+                diff = agent.utility() - agent.evaluate_bundle(other_agent.items)
+                if diff < 0:
+                    return False
+        return True
+
+    def is_borda_max_min(self):
+        """
+        itertools.combinaison()
+        Retourne vrai si le min des scores de borda est égal au max min des scores de Borda
+        des agents selon toutes les allocations possibles
+        """
+
+        # I./ Compute current minimum
+        min_score = None
+        for name, agent in self.agents.items():
+            value = agent.utility()
+            if not min_score or value < min_score:
+                min_score = value
