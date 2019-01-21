@@ -3,8 +3,7 @@
 from src.Database import *
 from src.Problem import *
 from src.Sequence import *
-from src.Algorithm.BottomUpAlgorithm import BottomUpAlgorithm
-from src.Algorithm.TrumpAlgorithm import TrumpAlgorithm
+from src.Algorithm import *
 
 # Load database
 db = Database()
