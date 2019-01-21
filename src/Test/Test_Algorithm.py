@@ -21,7 +21,9 @@ a3_r2_pb = Problem("a3_r2",
 
 # Resolve a pb with an algorithm
 trump_algo = TrumpAlgorithm(a3_r2_pb)
-trump_algo.compute(Sequence.generate(a3_r2_pb, SequenceType.ROUND_ROBIN), False)
+trump_algo.compute(Sequence.generate(a3_r2_pb, SequenceType.ROUND_ROBIN, False), False)
 # Print results
-print(trump_algo)
+print(Sequence.generate(a3_r2_pb, SequenceType.ROUND_ROBIN, False))
+print(Sequence.generate(a3_r2_pb, SequenceType.ROUND_ROBIN, True))
+print(Sequence.generate(a3_r2_pb, SequenceType.ROUND_ROBIN, True))
 

@@ -1,6 +1,7 @@
 # coding: utf8
 
 import math
+import random
 
 from src.Utility import *
 
@@ -13,12 +14,14 @@ class SequenceType(AutoNumber):
 class Sequence(object):
 
     @staticmethod
-    def generate(problem, mode=SequenceType.ROUND_ROBIN):
-        agents = problem.agents
+    def generate(problem, mode=SequenceType.ROUND_ROBIN, randomize=False):
+        agents = list(problem.agents.keys())
+        if randomize:
+            random.shuffle(agents)
         resources = problem.items
 
         repeat = math.floor(len(resources) / len(agents))
-        p = list(agents)
+        p = agents[:]
         p_inv = p.copy()
         p_inv.reverse()
 
