@@ -156,6 +156,10 @@ class Problem(object):
     def get_items_per_agent(self):
         return math.floor(len(self.items) / len(self.agents))
 
+    @staticmethod
+    def get_other_items(ref, items):
+        return set(ref) - set(items)
+
     "=========================================="
     "=============== Efficiency ==============="
     "=========================================="
@@ -191,17 +195,37 @@ class Problem(object):
 
     def is_maximum_borda_sum(self):
         """
-        itertools.combinaison()
         Retourne vrai si la somme des scores de Borda des agents actuels
         est égale au max de la sum des scores de Borda des agents selon toutes les allocations possibles
         """
         # I./ Compute current sum
-        sum = 0
+        current_sum = 0
         for name, agent in self.agents.items():
-            sum += agent.utility()
+            current_sum += agent.utility()
 
         # II./ Get all possible allocations
-        all_alloc = [list(x) for x in itertools.combinations(self.items, self.get_items_per_agent())]
+        # Voir pour la synchroniser (GIL)
+        sum_list = list()
+        self.recursive_borda_sum(sum_list,
+                                 0,
+                                 list(self.items),
+                                 list(self.agents.keys()))
+        return current_sum == max(sum_list)
+
+    def recursive_borda_sum(self, sum_list, current_sum, items, remaining_agents):
+        all_alloc = [list(x) for x in itertools.combinations(items, self.get_items_per_agent())]
+        agent_name = remaining_agents.pop()
+        agent = self.agents[agent_name]
+        for alloc in all_alloc:
+            remaining_items = self.get_other_items(items, alloc)
+            if remaining_agents:
+                self.recursive_borda_sum(sum_list,
+                                         current_sum + agent.evaluate_bundle(alloc),
+                                         remaining_items,
+                                         remaining_agents[:])
+            else:
+                sum_list.append(current_sum)
+        return
 
     def is_borda_proportional(self):
         """
