@@ -204,7 +204,6 @@ class Problem(object):
             current_sum += agent.utility()
 
         # II./ Get all possible allocations
-        # Voir pour la synchroniser (GIL)
         sum_list = list()
         self.recursive_borda_sum(sum_list,
                                  0,
@@ -224,7 +223,7 @@ class Problem(object):
                                          remaining_items,
                                          remaining_agents[:])
             else:
-                sum_list.append(current_sum)
+                sum_list.append(current_sum + agent.evaluate_bundle(alloc))
         return
 
     def is_borda_proportional(self):
@@ -253,3 +252,37 @@ class Problem(object):
             value = agent.utility()
             if not min_score or value < min_score:
                 min_score = value
+
+        # II./ Compute current minimum
+        score_list = list()
+        self.recursive_borda_max_min(score_list,
+                                     list(),
+                                     list(self.items),
+                                     list(self.agents.keys()))
+
+        # III./ Compute min for each possible allocations
+        min_score_list = list()
+        for round_score in score_list:
+            print(round_score)
+            min_score_list.append(min(round_score))
+
+        return min == max(min_score_list)
+
+    def recursive_borda_max_min(self, score_list, current_score, items, remaining_agents):
+        all_alloc = [list(x) for x in itertools.combinations(items, self.get_items_per_agent())]
+        agent_name = remaining_agents.pop()
+        agent = self.agents[agent_name]
+        for alloc in all_alloc:
+            remaining_items = self.get_other_items(items, alloc)
+            if remaining_agents:
+                _current_score = current_score[:]
+                _current_score.append(agent.evaluate_bundle(alloc))
+                self.recursive_borda_max_min(score_list,
+                                             _current_score,
+                                             remaining_items,
+                                             remaining_agents[:])
+            else:
+                _current_score = current_score[:]
+                _current_score.append(agent.evaluate_bundle(alloc))
+                score_list.append(_current_score)
+        return
