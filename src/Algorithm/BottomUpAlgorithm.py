@@ -24,7 +24,7 @@ class BottomUpAlgorithm(AbstractAlgorithm):
 
             # Récupération de l'agent
             agent = self.problem.agents[agent_name]
-            self.trace.append(print("... Considering agent : " + agent))
+            self.trace.append(print("... Considering agent : " + str(agent)))
 
             # Récupération de l'item le moins valué du lot par cet agent
             least_valued_item = agent.bottom(self.problem.get_unallocated_items())

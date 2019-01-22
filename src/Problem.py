@@ -263,7 +263,6 @@ class Problem(object):
         # III./ Compute min for each possible allocations
         min_score_list = list()
         for round_score in score_list:
-            print(round_score)
             min_score_list.append(min(round_score))
 
         return min == max(min_score_list)
