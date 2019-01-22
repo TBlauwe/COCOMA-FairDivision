@@ -22,3 +22,4 @@ a3_r2_pb = Problem("a3_r2",
 # Resolve a pb with an algorithm
 trump_algo = TrumpAlgorithm(a3_r2_pb)
 trump_algo.compute(Sequence.generate(a3_r2_pb, SequenceType.ROUND_ROBIN, False), False)
+print(trump_algo)

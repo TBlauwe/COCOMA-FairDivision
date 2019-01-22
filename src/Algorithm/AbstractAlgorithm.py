@@ -27,6 +27,8 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
             s += "| Reason\t: " + self.reason + "\n"
         s += "|\n"
         s += str(self.problem)
+        if self.status == self.Status.SUCCEEDED:
+            s += self.get_properties_output()
         return s
 
     def compute(self, sequence, display_trace=True):
@@ -48,6 +50,17 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
     @abstractmethod
     def _compute(self, sequence, display_trace):
         raise NotImplementedError
+
+    def get_properties_output(self):
+        s = "|-=-=-=-=-=-=-=-=-= [ PROPERTIES ]-=-=-=-=-=-=-=-=-=|\n"
+        s += "|\n"
+        s += "| Is borda optimal \t: " + str(self.problem.is_borda_optimal()) + "\n"
+        s += "| Is borda proportional \t: " + str(self.problem.is_borda_proportional()) + "\n"
+        s += "| Is borda max min \t: " + str(self.problem.is_borda_max_min()) + "\n"
+        s += "| Is borda maximum borda sum \t: " + str(self.problem.is_borda_max_min()) + "\n"
+        s += "|\n"
+        s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
+        return s
 
     @staticmethod
     def print_start_computing():
