@@ -186,12 +186,21 @@ class Problem(object):
             other_agents = self.get_other_agents(set(name))
             for other_name in other_agents:
                 other_agent = self.agents[other_name]
-                diff = agent.utility() - agent.evaluate_bundle(other_agent.items)
+                u = agent.utility()
+                o_u = agent.evaluate_bundle(other_agent.items)
+                diff = u - o_u
                 if diff < 0:
-                    return False
+                    return False, \
+                           name + " prefers " + other_name + "'s allocation : " + str(other_agent.items) + " | " \
+                           + str(u) + " vs " + str(o_u)
                 elif diff > 0:
                     at_least_one_greater = True
-        return at_least_one_greater
+        if at_least_one_greater:
+            return True, \
+                   "For each agent, his allocation is greater or equal to other agent's allocations"
+        else:
+            return False, \
+                   "For each agent, his allocation is equal to other agent's allocations"
 
     def is_maximum_borda_sum(self):
         """
@@ -209,7 +218,8 @@ class Problem(object):
                                  0,
                                  list(self.items),
                                  list(self.agents.keys()))
-        return current_sum == max(sum_list)
+        max_sum = max(sum_list)
+        return current_sum == max_sum, "Current sum (" + str(current_sum) + ") | Max sum (" + str(max_sum) + ")"
 
     def recursive_borda_sum(self, sum_list, current_sum, items, remaining_agents):
         all_alloc = [list(x) for x in itertools.combinations(items, self.get_items_per_agent())]
@@ -234,10 +244,13 @@ class Problem(object):
             other_agents = self.get_other_agents(set(name))
             for other_name in other_agents:
                 other_agent = self.agents[other_name]
-                diff = agent.utility() - agent.evaluate_bundle(other_agent.items)
-                if diff < 0:
-                    return False
-        return True
+                u = agent.utility()
+                o_u = agent.evaluate_bundle(other_agent.items)
+                if u - o_u < 0:
+                    return False, \
+                           name + " prefers " + other_name + "'s allocation : " + str(other_agent.items) + " | " \
+                           + str(u) + " vs " + str(o_u)
+        return True, "For each agent, his allocation is at least equal to other agent's allocations"
 
     def is_borda_max_min(self):
         """
@@ -265,7 +278,9 @@ class Problem(object):
         for round_score in score_list:
             min_score_list.append(min(round_score))
 
-        return min == max(min_score_list)
+        max_min_score = max(min_score_list)
+        return min_score == max(min_score_list), \
+               "Minimum score (" + str(min_score) + ") | Max min score (" + str(max_min_score) + ")"
 
     def recursive_borda_max_min(self, score_list, current_score, items, remaining_agents):
         all_alloc = [list(x) for x in itertools.combinations(items, self.get_items_per_agent())]

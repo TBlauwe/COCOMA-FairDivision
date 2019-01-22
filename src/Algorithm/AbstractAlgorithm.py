@@ -54,10 +54,10 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
     def get_properties_output(self):
         s = "|-=-=-=-=-=-=-=-=-= [ PROPERTIES ]-=-=-=-=-=-=-=-=-=|\n"
         s += "|\n"
-        s += "| Is borda optimal \t: " + str(self.problem.is_borda_optimal()) + "\n"
-        s += "| Is borda proportional \t: " + str(self.problem.is_borda_proportional()) + "\n"
-        s += "| Is borda max min \t: " + str(self.problem.is_borda_max_min()) + "\n"
-        s += "| Is borda maximum borda sum \t: " + str(self.problem.is_borda_max_min()) + "\n"
+        s += "| Is borda optimal           : " + str(self.problem.is_borda_optimal()) + "\n"
+        s += "| Is borda proportional      : " + str(self.problem.is_borda_proportional()) + "\n"
+        s += "| Is borda max min           : " + str(self.problem.is_borda_max_min()) + "\n"
+        s += "| Is borda maximum borda sum : " + str(self.problem.is_maximum_borda_sum()) + "\n"
         s += "|\n"
         s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
         return s
