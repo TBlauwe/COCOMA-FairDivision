@@ -2,6 +2,7 @@
 
 from src.Database import *
 from src.Problem import *
+from src.ProblemSet import *
 from src.Sequence import *
 from src.Algorithm import *
 
@@ -33,4 +34,8 @@ a6_r2_pb = Problem("a6_r2",
 
 bottom_up_algo = BottomUpAlgorithm(a3_r2_pb)
 bottom_up_algo.compute(Sequence.generate(bottom_up_algo.problem, SequenceType.ROUND_ROBIN, True), False)
-print(bottom_up_algo)
+
+a3_r2_pb_set = ProblemSet(a3_r2_pb, 720)
+
+for problem in a3_r2_pb_set.problems:
+    print(problem)

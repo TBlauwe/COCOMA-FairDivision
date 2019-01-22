@@ -19,23 +19,23 @@ class BottomUpAlgorithm(AbstractAlgorithm):
         # On considère chaque agent en suivant la séquence
         counter = 1
         for agent_name in sequence:
-            self.trace.append(print("----- Round " + str(counter) + "-----"))
-            self.trace.append(print("Remaining sequence " + str(sequence[counter:])))
+            self.trace.append("----- Round " + str(counter) + "-----")
+            self.trace.append("Remaining sequence " + str(sequence[counter:]))
 
             # Récupération de l'agent
             agent = self.problem.agents[agent_name]
-            self.trace.append(print("... Considering agent : " + str(agent)))
+            self.trace.append("... Considering agent : " + str(agent))
 
             # Récupération de l'item le moins valué du lot par cet agent
             least_valued_item = agent.bottom(self.problem.get_unallocated_items())
-            self.trace.append(print("... Least valued item : " + str(least_valued_item)))
+            self.trace.append("... Least valued item : " + str(least_valued_item))
 
             # Récupération des agents qui peuvent recevoir un item (tous le monde doit avoir le même nb d'items)
             eligible_agents = self.problem.get_eligible_agents()
 
             # Récupération de l'agent qui value le plus cet item
             receiver = self.problem.max_utility_from(least_valued_item, eligible_agents)
-            self.trace.append(print("... Agent valuing this item the most : " + str(receiver)))
+            self.trace.append("... Agent valuing this item the most : " + str(receiver))
 
             # Allocation de l'item
             self.problem.allocate(least_valued_item, receiver)

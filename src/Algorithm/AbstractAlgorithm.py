@@ -48,7 +48,7 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
                 print(trace)
 
     @abstractmethod
-    def _compute(self, sequence, display_trace):
+    def _compute(self, sequence):
         raise NotImplementedError
 
     def get_properties_output(self):
@@ -59,7 +59,7 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
         s += "| Is borda max min           : " + str(self.problem.is_borda_max_min()) + "\n"
         s += "| Is borda maximum borda sum : " + str(self.problem.is_maximum_borda_sum()) + "\n"
         s += "|\n"
-        s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
+        s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
         return s
 
     @staticmethod

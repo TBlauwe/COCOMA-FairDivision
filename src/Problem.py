@@ -7,15 +7,19 @@ import math
 
 class Problem(object):
 
-    def __init__(self, name, agents, items):
-        assert (len(items) % len(agents) == 0), "Number of items must be a multiple of the number of agents"
+    def __init__(self, name, agents_name, items, initialize_agents=True):
+        assert (len(items) % len(agents_name) == 0), "Number of items must be a multiple of the number of agents"
 
         self.name = name
         self.agents = dict()
         self.items = items
 
-        for name in agents:
-            self.agents[name] = Agent(name, self)
+        if initialize_agents:
+            for name in agents_name:
+                self.agents[name] = Agent(name, self)
+        else:
+            for name in agents_name:
+                self.agents[name] = None
 
     def __str__(self):
         s = "|-=-=-=-=-=-=-=-=-= [ Problem ]-=-=-=-=-=-=-=-=-=|\n"
@@ -30,7 +34,7 @@ class Problem(object):
         for counter, item in enumerate(self.items):
             s += "|\t" + str(counter+1) + " : " + str(item) + "\n"
         s += "|\n"
-        s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
+        s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
         return s
 
     def number_of_items(self):
@@ -42,6 +46,9 @@ class Problem(object):
     "======================================"
     "=============== Agents ==============="
     "======================================"
+
+    def force_agents(self, agents):
+        self.agents = agents
 
     def allocate(self, item, agent_name):
         """
@@ -130,6 +137,12 @@ class Problem(object):
         Retourne les agents autre que ceux passés en argument
         """
         return self.agents.keys() - agents
+
+    def get_agents_name(self):
+        """
+        Retourne les agents qui ne peuvent pas recevoir des items
+        """
+        return set(self.agents.keys())
 
     "====================================="
     "=============== Items ==============="
