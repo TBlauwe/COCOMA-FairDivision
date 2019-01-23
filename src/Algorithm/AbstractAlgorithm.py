@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
 from src.Utility import AutoNumber
+from src.Problem import BordaProperty
 
 
 class AbstractAlgorithm(object, metaclass=ABCMeta):
@@ -40,6 +41,8 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
 
         self._compute(sequence)
 
+        self.problem.compute_borda_properties()
+
         self.trace.append(self.print_end_computing())
         self.trace.append(str(self))
 
@@ -54,10 +57,10 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
     def get_properties_output(self):
         s = "|-=-=-=-=-=-=-=-=-= [ PROPERTIES ]-=-=-=-=-=-=-=-=-=|\n"
         s += "|\n"
-        s += "| Is borda optimal           : " + str(self.problem.is_borda_optimal()) + "\n"
-        s += "| Is borda proportional      : " + str(self.problem.is_borda_proportional()) + "\n"
-        s += "| Is borda max min           : " + str(self.problem.is_borda_max_min()) + "\n"
-        s += "| Is borda maximum borda sum : " + str(self.problem.is_maximum_borda_sum()) + "\n"
+        s += "| Is borda optimal           : " + str(self.problem.borda_properties[BordaProperty.BP]) + "\n"
+        s += "| Is borda proportional      : " + str(self.problem.borda_properties[BordaProperty.BE]) + "\n"
+        s += "| Is borda max min           : " + str(self.problem.borda_properties[BordaProperty.BM]) + "\n"
+        s += "| Is borda maximum borda sum : " + str(self.problem.borda_properties[BordaProperty.BS]) + "\n"
         s += "|\n"
         s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n"
         return s

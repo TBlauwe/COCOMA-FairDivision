@@ -1,8 +1,21 @@
 # coding: utf8
 
 from src.Agent import *
+from enum import Enum
+
 import itertools
 import math
+
+
+class BordaProperty(Enum):
+    BP = "Borda Optimality"
+    BE = "Borda Proportionality"
+    BS = "Borda Sum"
+    BM = "Borda Max Min"
+
+    @staticmethod
+    def values():
+        return [x.value for x in BordaProperty]
 
 
 class Problem(object):
@@ -13,6 +26,10 @@ class Problem(object):
         self.name = name
         self.agents = dict()
         self.items = items
+        self.borda_properties = dict()
+
+        for borda_property in self.borda_properties:
+            self.borda_properties[borda_property] = None
 
         if initialize_agents:
             for name in agents_name:
@@ -313,3 +330,15 @@ class Problem(object):
                 _current_score.append(agent.evaluate_bundle(alloc))
                 score_list.append(_current_score)
         return
+
+    def compute_borda_properties(self):
+        """
+        Détermine si le problème vérifie chaque propriété de Borda
+        :return:
+        """
+        self.borda_properties[BordaProperty.BE] = self.is_borda_proportional()
+        self.borda_properties[BordaProperty.BP] = self.is_borda_optimal()
+        self.borda_properties[BordaProperty.BS] = self.is_maximum_borda_sum()
+        self.borda_properties[BordaProperty.BM] = self.is_borda_max_min()
+
+        return self.borda_properties

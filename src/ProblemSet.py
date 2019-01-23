@@ -1,5 +1,5 @@
 import random
-
+import matplotlib.pyplot as plt
 from src.Problem import *
 
 
@@ -13,6 +13,10 @@ class ProblemSet(object):
         self.initial_problem = initial_problem
         self.problems = list()
         self.results = dict()
+        self.borda_properties_matrix = dict()
+
+        for borda_property in BordaProperty:
+            self.borda_properties_matrix[borda_property] = list()
 
         all_rankings = [list(x) for x in itertools.permutations(self.initial_problem.items)]
 
@@ -36,3 +40,20 @@ class ProblemSet(object):
             self.problems.append(problem)
 
         return
+
+    def add_results(self, algorithm):
+        for borda_property in BordaProperty:
+            self.borda_properties_matrix[borda_property].append(algorithm.problem.borda_properties[borda_property][0])
+
+    def show_results(self):
+        fig = plt.figure()
+        plt.style.use('ggplot')
+        ax = plt.subplot(111)
+        y = list()
+        for borda_property in BordaProperty:
+            y.append(sum([1 for x in self.borda_properties_matrix[borda_property] if x])
+                     / len(self.borda_properties_matrix[borda_property]))
+
+        ax.bar(BordaProperty.values(), y)
+        plt.title("Pourcentage")
+        plt.show()
