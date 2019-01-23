@@ -16,8 +16,10 @@ initial_pb = Problem("test",
                            db.get_random_agents_names(nbAgents),
                            db.get_random_items_names(nbItems))
 
-pb_set = ProblemSet(initial_pb, 720)
+# Create a set of different instances of a problem
+pb_set = ProblemSet(initial_pb)
 
+# Test with a specific sequence
 seq = Sequence.generate(initial_pb, SequenceType.ROUND_ROBIN, True)
 
 for index, problem in enumerate(pb_set.problems):

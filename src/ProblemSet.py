@@ -1,4 +1,5 @@
 import random
+import math
 import matplotlib.pyplot as plt
 from src.Problem import *
 
@@ -9,7 +10,7 @@ class ProblemSet(object):
     des changements au niveau des préférences des agents. Au plus N! instances possibles (N = nombre d'items)
     """
 
-    def __init__(self, initial_problem, number):
+    def __init__(self, initial_problem, number=math.inf):
         self.initial_problem = initial_problem
         self.problems = list()
         self.results = dict()
@@ -48,12 +49,15 @@ class ProblemSet(object):
     def show_results(self):
         fig = plt.figure()
         plt.style.use('ggplot')
+        plt.title(self.initial_problem.name)
+        plt.yticks(range(0,101,10))
         ax = plt.subplot(111)
+        ax.set_ylim([0, 100])
+
         y = list()
         for borda_property in BordaProperty:
-            y.append(sum([1 for x in self.borda_properties_matrix[borda_property] if x])
-                     / len(self.borda_properties_matrix[borda_property]))
+            values = self.borda_properties_matrix[borda_property]
+            y.append(sum(values) / len(values) * 100)
 
         ax.bar(BordaProperty.values(), y)
-        plt.title("Pourcentage")
         plt.show()
