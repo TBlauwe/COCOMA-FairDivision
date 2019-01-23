@@ -12,6 +12,7 @@ class ProblemSet(object):
     def __init__(self, initial_problem, number):
         self.initial_problem = initial_problem
         self.problems = list()
+        self.results = dict()
 
         all_rankings = [list(x) for x in itertools.permutations(self.initial_problem.items)]
 

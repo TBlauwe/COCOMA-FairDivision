@@ -29,7 +29,8 @@ class Agent(object):
     "==========================================="
 
     def set_borda_ranks(self, rankings):
-        self.rankings = rankings
+        for index, item in enumerate(rankings):
+            self.rankings[item] = len(rankings) - index
 
     def generate_borda_rankings(self, items):
         """
