@@ -318,16 +318,14 @@ class Problem(object):
         agent = self.agents[agent_name]
         for alloc in all_alloc:
             remaining_items = self.get_other_items(items, alloc)
+            _current_score = current_score[:]
+            _current_score.append(agent.evaluate_bundle(alloc))
             if remaining_agents:
-                _current_score = current_score[:]
-                _current_score.append(agent.evaluate_bundle(alloc))
                 self.recursive_borda_max_min(score_list,
                                              _current_score,
                                              remaining_items,
                                              remaining_agents[:])
             else:
-                _current_score = current_score[:]
-                _current_score.append(agent.evaluate_bundle(alloc))
                 score_list.append(_current_score)
         return
 

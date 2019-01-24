@@ -17,14 +17,12 @@ initial_pb = Problem("test",
                            db.get_random_items_names(nbItems))
 
 # Create a set of different instances of a problem
-pb_set = ProblemSet(initial_pb)
+algorithms = [BottomUpAlgorithm, TrumpAlgorithm]
+limit = 100
+pb_set = ProblemSet(initial_pb, algorithms, 10000)
 
 # Test with a specific sequence
 seq = Sequence.generate(initial_pb, SequenceType.ROUND_ROBIN, True)
-
-for index, problem in enumerate(pb_set.problems):
-    bottom_up_algo = BottomUpAlgorithm(problem)
-    bottom_up_algo.compute(seq, False)
-    pb_set.add_results(bottom_up_algo)
-
+pb_set.run(seq)
 pb_set.show_results()
+
