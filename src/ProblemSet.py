@@ -65,21 +65,25 @@ class ProblemSet(object):
                 self.problems.append(problem)
 
     def run(self, sequence):
-        print("===================================================")
-        print("=============== LAUNCHING BENCHMARK ===============")
-        print("===================================================")
+        print(self.get_summary())
+        print("|-=-=-=-=-=-= [ STARTING BENCHMARK ] =-=-=-=-=-=-=|")
+        print("Sequence : ", sequence, end="\n")
 
         for algorithm in self.algorithms:
-            print("---------- Testing : " + algorithm.__name__)
+            print("\n---------- Testing : " + algorithm.__name__)
+            nb_pb = len(self.problems)
+            step = nb_pb / 10
+            print("In progress ", end="")
             for index, problem in enumerate(self.problems):
-                print("... round " + str(index))
+                if(index >= step):
+                    print(".", end="")
+                    step += step
                 algo = algorithm(problem)
                 algo.compute(sequence, False)
                 self.add_result(algorithm, algo)
+            print(" Done !")
 
-        print("==================================================")
-        print("=============== STOPPING BENCHMARK ===============")
-        print("==================================================")
+        print("|-=-=-=-=-=-= [ ENDING BENCHMARK ] =-=-=-=-=-=-=|")
 
     def add_result(self, algorithm, instance):
         """
@@ -88,6 +92,19 @@ class ProblemSet(object):
         """
         for borda_property in BordaProperty:
             self.results[algorithm][borda_property].append(instance.problem.borda_properties[borda_property][0])
+
+    def get_summary(self):
+        s = str(self.initial_problem)
+        s += "|-=-=-=-=-=-=-=-=-= [ SUMMARY ]-=-=-=-=-=-=-=-=-=|\n"
+        s += "|\n"
+        s += "| Problem         : " + self.initial_problem.name + "\n"
+        s += "| Algorithms      : " + str([x.__name__ for x in self.algorithms]) + "\n"
+        s += "| Nb of instances : " + str(len(self.problems)) + "\n"
+        s += "| Nb of agents    : " + str(self.initial_problem.number_of_agents()) + "\n"
+        s += "| Nb of items     : " + str(self.initial_problem.number_of_items()) + "\n"
+        s += "|\n"
+        s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|"
+        return s
 
     def show_results(self):
         fig = plt.figure()

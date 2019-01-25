@@ -19,7 +19,7 @@ initial_pb = Problem("test",
 # Create a set of different instances of a problem
 algorithms = [BottomUpAlgorithm, TrumpAlgorithm]
 limit = 100
-pb_set = ProblemSet(initial_pb, algorithms, 10000)
+pb_set = ProblemSet(initial_pb, algorithms, limit)
 
 # Test with a specific sequence
 seq = Sequence.generate(initial_pb, SequenceType.ROUND_ROBIN, True)
