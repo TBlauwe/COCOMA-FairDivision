@@ -39,7 +39,7 @@ class AbstractAlgorithm(object, metaclass=ABCMeta):
         self.trace.append(str(self))
         self.trace.append(self.print_start_computing())
 
-        self._compute(sequence)
+        self._compute(sequence.value)
 
         self.problem.compute_borda_properties()
 

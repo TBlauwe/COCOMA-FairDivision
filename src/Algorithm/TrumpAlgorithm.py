@@ -24,7 +24,7 @@ class TrumpAlgorithm(AbstractAlgorithm):
 
                 # Récupération de l'agent
                 agent = self.problem.agents[agent_name]
-                self.trace.append("... Considering agent : " + str(agent))
+                self.trace.append("... Considering agent : " + agent_name)
 
                 # Récupération des items non alloués
                 unallocated_items = self.problem.get_unallocated_items()

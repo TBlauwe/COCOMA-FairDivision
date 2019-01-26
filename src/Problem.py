@@ -20,10 +20,11 @@ class BordaProperty(Enum):
 
 class Problem(object):
 
-    def __init__(self, name, agents_name, items, initialize_agents=True):
+    def __init__(self, agents_name, items, name="", initialize_agents=True):
         assert (len(items) % len(agents_name) == 0), "Number of items must be a multiple of the number of agents"
 
-        self.name = name
+        if not name:
+            self.name = "Agents_" + str(len(agents_name)) + "_Items_" + str(len(items))
         self.agents = dict()
         self.items = items
         self.borda_properties = dict()

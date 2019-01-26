@@ -13,6 +13,16 @@ class SequenceType(AutoNumber):
 
 class Sequence(object):
 
+    def __init__(self, value, _type):
+        self.type = _type
+        self.value = value
+
+    def __str__(self):
+        return "(" + str(self.get_type_name()) + ") - " + str(self.value)
+
+    def get_type_name(self):
+        return self.type.name
+
     @staticmethod
     def generate(problem, mode=SequenceType.ROUND_ROBIN, randomize=False):
         agents = list(problem.agents.keys())
@@ -26,6 +36,6 @@ class Sequence(object):
         p_inv.reverse()
 
         if mode == SequenceType.ROUND_ROBIN:
-            return p * repeat
+            return Sequence(p * repeat, mode)
         elif mode == SequenceType.BALANCED:
-            return (p + p_inv) * math.floor(repeat / 2)
+            return Sequence((p + p_inv) * math.floor(repeat / 2), mode)

@@ -1,5 +1,6 @@
 import random
 import math
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from src.Problem import *
@@ -12,11 +13,13 @@ class ProblemSet(object):
     des changements au niveau des préférences des agents. Au plus N! instances possibles (N = nombre d'items)
     """
 
-    def __init__(self, initial_problem, algorithms, limit=math.inf):
+    def __init__(self, initial_problem, algorithms, limit=math.inf, path="./"):
         self.initial_problem = initial_problem
         self.problems = list()  # Set of problems to test
         self.algorithms = algorithms
         self.results = dict()
+        self.sequence = None
+        self.path = path
 
         # Create a container to store all borda properties per algorithm
         for algorithm in algorithms:
@@ -42,9 +45,6 @@ class ProblemSet(object):
         return
 
     def recursive_generate_instances(self, all_rankings, current_rankings, remaining_agents, limit):
-        if len(self.problems) >= limit:
-            return
-
         agent_name = remaining_agents.pop()
         for ranking in all_rankings:
             _current_rankings = dict(current_rankings)
@@ -52,38 +52,41 @@ class ProblemSet(object):
             if remaining_agents:
                 self.recursive_generate_instances(all_rankings, _current_rankings, remaining_agents[:], limit)
             else:
+                if len(self.problems) >= limit:
+                    return
+
                 agents = dict()
                 for name, rankings in _current_rankings.items():
                     agent = Agent(name, self.initial_problem)
                     agent.set_borda_ranks(rankings)
                     agents[name] = agent
-                problem = Problem(self.initial_problem.name + "_" + str(len(self.problems) + 1),
-                                  self.initial_problem.get_agents_name(),
+                problem = Problem(self.initial_problem.get_agents_name(),
                                   self.initial_problem.items,
                                   False)
                 problem.force_agents(agents)
                 self.problems.append(problem)
 
     def run(self, sequence):
-        print(self.get_summary())
+        self.sequence = sequence
         print("|-=-=-=-=-=-= [ STARTING BENCHMARK ] =-=-=-=-=-=-=|")
-        print("Sequence : ", sequence, end="\n")
-
+        print(self.get_summary())
+        print("|-=-=-=-=-=-=-=-=- [ BEGIN ] -=-=-=-=-=-=-=-=-=-=-|")
         for algorithm in self.algorithms:
             print("\n---------- Testing : " + algorithm.__name__)
             nb_pb = len(self.problems)
-            step = nb_pb / 10
+            step = nb_pb / 51
+            checkpoint = step
             print("In progress ", end="")
             for index, problem in enumerate(self.problems):
-                if(index >= step):
+                if index >= checkpoint:
                     print(".", end="")
-                    step += step
+                    checkpoint += step
                 algo = algorithm(problem)
                 algo.compute(sequence, False)
                 self.add_result(algorithm, algo)
             print(" Done !")
 
-        print("|-=-=-=-=-=-= [ ENDING BENCHMARK ] =-=-=-=-=-=-=|")
+        print("\n|-=-=-=-=-=-=-=-=-= [ END ] =-=-=-=-=-=-=-=-=-=-=-|")
 
     def add_result(self, algorithm, instance):
         """
@@ -93,12 +96,19 @@ class ProblemSet(object):
         for borda_property in BordaProperty:
             self.results[algorithm][borda_property].append(instance.problem.borda_properties[borda_property][0])
 
+    def get_name(self):
+        name = "Set_"
+        name += self.initial_problem.name + "_"
+        name += self.sequence.get_type_name()
+        return name
+
     def get_summary(self):
         s = str(self.initial_problem)
         s += "|-=-=-=-=-=-=-=-=-= [ SUMMARY ]-=-=-=-=-=-=-=-=-=|\n"
         s += "|\n"
         s += "| Problem         : " + self.initial_problem.name + "\n"
         s += "| Algorithms      : " + str([x.__name__ for x in self.algorithms]) + "\n"
+        s += "| Sequence        : " + str(self.sequence) + "\n"
         s += "| Nb of instances : " + str(len(self.problems)) + "\n"
         s += "| Nb of agents    : " + str(self.initial_problem.number_of_agents()) + "\n"
         s += "| Nb of items     : " + str(self.initial_problem.number_of_items()) + "\n"
@@ -110,15 +120,20 @@ class ProblemSet(object):
         fig = plt.figure()
         plt.style.use('ggplot')
 
-        plt.title(self.initial_problem.name)
+        plt.suptitle(self.get_name().replace("_", " "), fontsize=14, fontweight='bold')
+        plt.title("Nombre d'instances : " + str(len(self.problems)))
         plt.yticks(range(0,101,10))
         plt.ylim([0,100])
+        plt.ylabel("% d'allocs vérifiant la propriété")
 
-        gap = .8 / len(self.algorithms)
+        X = np.arange(len(BordaProperty.values()))
+        gap = .5 / len(self.algorithms)
+
+        labels = [x.replace(" ", "\n") for x in BordaProperty.values()]
+        plt.xticks(X + gap, labels)
 
         for i, algorithm in enumerate(self.algorithms):
             y = list()
-            X = np.arange(len(BordaProperty.values()))
             for borda_property in BordaProperty:
                 values = self.results[algorithm][borda_property]
                 y.append(sum(values) / len(values) * 100)
@@ -126,3 +141,4 @@ class ProblemSet(object):
 
         plt.legend(loc="best")
         plt.show()
+        plt.savefig(self.path + "out/" + str(self.get_name()) + ".png")
