@@ -1,4 +1,5 @@
 from src.Algorithm.AbstractAlgorithm import AbstractAlgorithm
+from itertools import product
 
 """
 This algorithm was introduced by Brams et al. (2015) under the name Sequential Algorithm (SA).
@@ -13,15 +14,61 @@ the maximum rank of items currently considered for allocation.
 In the top level invocation of the procedure,l=1 .
 """
 
-
 class OriginalSequentialAlgorithm(AbstractAlgorithm):
 
     def _compute(self, sequence):
-        # On considère chaque agent en suivant la séquence
+        # sequence not necessary here, but included for compatibility with framework
 
-        if len(self.problem.get_unallocated_items()) == 0:
-            self.status = self.Status.SUCCEEDED
-            print("Success because U was empty at the end")
-        else:
-            print("Not empty")
-        return
+        def unattributed_under_rank(agent, l):
+            """
+            returns set of unattributed items of rank not worse than l
+            """
+            # the ranks in class Agent start at 0, but l start at 1
+            rank = l - 1
+            return agent.get_items_under_rank(self.problem.get_unallocated_items(), rank)
+
+        SUCCESS = 1
+        FAILURE = 0
+
+        def recursive_procedure(l=1):
+
+            U = self.problem.get_unallocated_items()
+
+            if len(U) == 0:
+                self.status = self.Status.SUCCEEDED
+                self.trace.append("Success because U was empty at the end")
+                self.trace.append("An allocation (Z_A, Z_B) has been found")
+                return SUCCESS
+
+            self.trace.append("... Considering l = " + str(l))
+
+            # prevents from going into an infinite loop
+            if (l > self.problem.number_of_items()):
+                return
+            such_pair_exist = False
+
+            # H contains the H_j(l) where j is agent's name (e.g. H_A(l))
+            H = dict()
+            for agent_name in self.problem.agents:
+                H[agent_name] = list(unattributed_under_rank(self.problem.agents[agent_name], l))
+
+            # the "i" below is just (i_A, i_B) for 2 agents
+            # the "*" is to go from a list to an iterable for "product"
+            for i in product(*[H[agent_name] for agent_name in H]):
+                # only consider case where the elements in i are distinct
+                if (len(set(i)) == len(i)):
+                    such_pair_exist = True
+                    agents_names = list(self.problem.agents.keys())
+                    for index in range(self.problem.number_of_agents()):
+                        self.problem.allocate(i[index], agents_names[index])
+                    if (recursive_procedure(l + 1) == FAILURE):
+                        # if the call failed, those objects weren't good so we must try other i
+                        for index in range(self.problem.number_of_agents()):
+                            self.problem.unallocate(i[index], agents_names[index])
+
+            if not such_pair_exist:
+                self.trace.append("... No such pair exist!")
+                recursive_procedure(l + 1)
+
+        # top level invocation of the procedure
+        recursive_procedure(1)
