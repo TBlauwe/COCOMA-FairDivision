@@ -27,7 +27,3 @@ pb_set = ProblemSet(initial_pb, algorithms, limit, "../../")
 seq = Sequence.generate(initial_pb, SequenceType.ROUND_ROBIN, True)
 pb_set.run(seq)
 pb_set.show_results()
-
-trump_algo = TrumpAlgorithm(initial_pb)
-seq = Sequence.generate(initial_pb, SequenceType.ROUND_ROBIN, True)
-trump_algo.compute(seq)

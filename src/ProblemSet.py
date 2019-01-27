@@ -34,9 +34,14 @@ class ProblemSet(object):
         """
         :param number: Par défaut, génére le nombre maximal d'instances possibles, sinon la valeur spécifiée
         """
-        all_rankings = [list(x) for x in itertools.permutations(self.initial_problem.items)]
-        rankings_per_agent = dict()
+        n = self.initial_problem.number_of_items()
+        print("... number of possible permutations for preferences :", math.factorial(n))
+        print("... generating permutations")
+        all_rankings = [list(x) for x in itertools.islice(itertools.permutations(self.initial_problem.items, n), limit)]
 
+        print("... generating instances")
+
+        rankings_per_agent = dict()
         # La préférence du premier agent n'est pas importante
         agents_name = list(self.initial_problem.get_agents_name())
         rankings_per_agent[agents_name.pop()] = all_rankings[0]
@@ -47,14 +52,14 @@ class ProblemSet(object):
     def recursive_generate_instances(self, all_rankings, current_rankings, remaining_agents, limit):
         agent_name = remaining_agents.pop()
         for ranking in all_rankings:
+            if len(self.problems) >= limit:
+                return
+
             _current_rankings = dict(current_rankings)
             _current_rankings[agent_name] = ranking
             if remaining_agents:
                 self.recursive_generate_instances(all_rankings, _current_rankings, remaining_agents[:], limit)
             else:
-                if len(self.problems) >= limit:
-                    return
-
                 agents = dict()
                 for name, rankings in _current_rankings.items():
                     agent = Agent(name, self.initial_problem)
@@ -116,7 +121,7 @@ class ProblemSet(object):
         s += "|-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|"
         return s
 
-    def show_results(self):
+    def show_results(self, save_only=False):
         fig = plt.figure()
         plt.style.use('ggplot')
 
@@ -140,5 +145,6 @@ class ProblemSet(object):
             plt.bar(X + i * gap, y, width=gap, label=algorithm.__name__)
 
         plt.legend(loc="best")
-        plt.show()
+        if not save_only:
+            plt.show()
         plt.savefig(self.path + "out/" + str(self.get_name()) + ".png")
